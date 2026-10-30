@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>XO Duel | Play Solo or Online with Friends</title>
+    <meta name="description" content="A simple, fast real-time Tic-Tac-Toe game you can play solo against AI or multiplayer across devices with a 4-letter room code!" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Top Nav -->
+    <header class="app-header">
+      <div class="logo" id="headerLogo" style="cursor: pointer;">
+        <span class="logo-icon">⚔️</span>
+        <span class="logo-text">XO <span class="accent-text">DUEL</span></span>
+      </div>
+
+      <div class="header-actions">
+        <div id="roomPill" class="room-pill hidden" title="Click to copy invite link">
+          <span>ROOM:</span>
+          <strong id="pillRoomCode">----</strong>
+          <span class="copy-icon">📋</span>
+        </div>
+        <button id="btnSound" class="icon-btn" title="Toggle Sound">🔊</button>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <!-- SCREEN 1: LOBBY & MODE SELECTION -->
+      <section id="screenLobby" class="card active">
+        <div class="card-header">
+          <h1>Choose Game Mode</h1>
+          <p>Play solo against AI or invite a friend to play across devices!</p>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="mode-tabs">
+          <button id="tabSolo" class="mode-tab active">
+            <span class="tab-icon">🤖</span>
+            <span class="tab-title">1 Player</span>
+            <span class="tab-desc">Play vs AI Bot</span>
+          </button>
+          <button id="tabMulti" class="mode-tab">
+            <span class="tab-icon">👥</span>
+            <span class="tab-title">2 Players</span>
+            <span class="tab-desc">Play with Friend</span>
+          </button>
+        </div>
+
+        <div class="form-section">
+          <label class="label" for="inputPlayerName">Your Name</label>
+          <input type="text" id="inputPlayerName" class="text-input" placeholder="e.g. Alex" maxlength="12" />
+
+          <!-- Panel 1: Solo Mode -->
+          <div id="panelSolo" class="panel active">
+            <button id="btnPlayBot" class="btn btn-primary btn-block">
+              <span>Start Solo Game</span>
+              <span class="btn-arrow">🤖</span>
+            </button>
+          </div>
+
+          <!-- Panel 2: Multiplayer Mode -->
+          <div id="panelMulti" class="panel">
+            <div class="buttons-stack">
+              <button id="btnCreate" class="btn btn-primary btn-block">
+                <span>Create Multiplayer Room</span>
+                <span class="btn-arrow">✨</span>
+              </button>
+
+              <div class="divider"><span>OR JOIN WITH CODE</span></div>
+
+              <div class="join-row">
+                <input type="text" id="inputRoomCode" class="text-input room-code-input" placeholder="CODE" maxlength="4" />
+                <button id="btnJoin" class="btn btn-secondary">
+                  <span>Join Game</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-rules">
+          <span>⚡ Rules: Place 3 in a row (horizontal, vertical, or diagonal) to win!</span>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: ACTIVE GAME BOARD -->
+      <section id="screenGame" class="card">
+        <!-- Waiting Banner for Player 2 (only in multiplayer waiting) -->
+        <div id="boxWaitingOpponent" class="waiting-box hidden">
+          <div class="waiting-spinner"></div>
+          <div>
+            <h3>Waiting for Player 2...</h3>
+            <p>Tell your friend to join room code: <strong id="waitingRoomCode" class="accent-code">----</strong></p>
+            <div class="waiting-actions">
+              <button id="btnCopyInvite" class="btn btn-sm btn-outline">🔗 Copy Link</button>
+              <button id="btnPlayBotInstead" class="btn btn-sm btn-secondary">🤖 Play Bot Instead</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scoreboard -->
+        <div class="scoreboard">
+          <div class="player-score" id="scoreP1">
+            <div class="player-badge symbol-x">X</div>
+            <div class="player-info">
+              <span class="player-name" id="nameP1">You</span>
+              <span class="player-pts" id="ptsP1">0 wins</span>
+            </div>
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <div class="player-score" id="scoreP2">
+            <div class="player-badge symbol-o">O</div>
+            <div class="player-info">
+              <span class="player-name" id="nameP2">🤖 Bot</span>
+              <span class="player-pts" id="ptsP2">0 wins</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status / Turn Banner -->
+        <div id="statusBanner" class="status-banner">
+          <span id="statusText">Your turn!</span>
+        </div>
+
+        <!-- 3x3 Tic Tac Toe Grid -->
+        <div class="board-grid" id="boardGrid">
+          <button class="cell" data-index="0" id="cell-0"></button>
+          <button class="cell" data-index="1" id="cell-1"></button>
+          <button class="cell" data-index="2" id="cell-2"></button>
+          <button class="cell" data-index="3" id="cell-3"></button>
+          <button class="cell" data-index="4" id="cell-4"></button>
+          <button class="cell" data-index="5" id="cell-5"></button>
+          <button class="cell" data-index="6" id="cell-6"></button>
+          <button class="cell" data-index="7" id="cell-7"></button>
+          <button class="cell" data-index="8" id="cell-8"></button>
+        </div>
+
+        <!-- Game Actions -->
+        <div class="game-actions">
+          <button id="btnRematch" class="btn btn-primary btn-block hidden">
+            <span>Play Again 🔄</span>
+          </button>
+          <button id="btnLeave" class="btn btn-ghost btn-block">
+            <span>Main Menu 🚪</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">Copied invite link!</div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
